@@ -82,15 +82,27 @@ export interface NotificationStatisticsResponse {
   }
 }
 
-export type NotificationType = 'COMMENT' | 'LIKE_POST' | 'FOLLOW' | 'ROUTINE_REMINDER' | 'DIARY_REMINDER' | 'BROADCAST'
+export type NotificationType =
+  | 'COMMENT'
+  | 'LIKE_POST'
+  | 'FOLLOW'
+  | 'ROUTINE_REMINDER'
+  | 'DIARY_REMINDER'
+  | 'BROADCAST'
+  | 'LIKE_COMMENT'
+  | 'REPLY'
+  | 'REPLY_ON_MY_POST'
 
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   COMMENT: '댓글',
-  LIKE_POST: '좋아요',
+  LIKE_POST: '게시글 좋아요',
   FOLLOW: '팔로우',
   ROUTINE_REMINDER: '루틴 알림',
   DIARY_REMINDER: '일기 알림',
-  BROADCAST: '전체 공지'
+  BROADCAST: '전체 공지',
+  LIKE_COMMENT: '댓글 좋아요',
+  REPLY: '대댓글',
+  REPLY_ON_MY_POST: '내 게시글에 단 댓글',
 }
 
 // Notification status styling
