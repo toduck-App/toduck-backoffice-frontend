@@ -797,7 +797,7 @@ export default function DashboardPage() {
                 />
               </div>
               <div className="flex-1 space-y-2.5 mt-5 mr-10 mb-5 ml-4">
-                {deletionReasonData
+                {[...deletionReasonData]
                   .sort((a, b) => b.value - a.value)
                   .slice(0, 6)
                   .map((reason, index) => {
