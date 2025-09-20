@@ -49,7 +49,7 @@ export const getApiConfig = (): ApiConfig => {
   return {
     baseURL: isDevelopment
       ? 'http://localhost:8080'
-      : 'https://backoffice-toduck.seol.pro',
+      : 'https://api-toduck.seol.pro',
     timeout: 10000,
     retries: 3,
   }
@@ -72,7 +72,8 @@ export const API_ENDPOINTS = {
 
   // Notifications
   NOTIFICATIONS: '/api/v1/backoffice/broadcast-notifications',
-  CANCEL_NOTIFICATION: (id: number) => `/api/v1/backoffice/broadcast-notifications/${id}`,
+  CANCEL_NOTIFICATION: (id: number) =>
+    `/api/v1/backoffice/broadcast-notifications/${id}`,
   NOTIFICATION_STATISTICS: '/api/v1/backoffice/users/notifications/statistics',
 
   // Statistics
