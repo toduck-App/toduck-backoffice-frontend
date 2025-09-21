@@ -137,7 +137,7 @@ export default function NotificationsPage() {
   const topNotificationTypes = useMemo(() => {
     if (!statisticsData?.notificationCountsByType) return []
 
-    return Object.entries(statisticsData.notificationCountsByType)
+    return [...Object.entries(statisticsData.notificationCountsByType)]
       .sort(([, a], [, b]) => b - a)
       .slice(0, 6)
       .map(([type, count]) => ({
@@ -300,7 +300,7 @@ export default function NotificationsPage() {
                   />
                 </div>
                 <div className="flex-1 space-y-1.5 pr-2">
-                  {chartData
+                  {[...chartData]
                     .sort((a, b) => b.value - a.value)
                     .slice(0, 6)
                     .map((item) => {
