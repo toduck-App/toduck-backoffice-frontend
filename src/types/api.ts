@@ -81,4 +81,11 @@ export const API_ENDPOINTS = {
   STATISTICS_DAILY: '/api/v1/backoffice/statistics/daily',
   STATISTICS_PERIOD: '/api/v1/backoffice/statistics/period',
   STATISTICS_MULTI_DATE: '/api/v1/backoffice/statistics/multi-date',
+
+  // Social Posts
+  SOCIALS: '/v1/socials',
+  SOCIAL_DETAIL: (id: number) => `/v1/socials/${id}`,
+  SOCIAL_DELETE: (id: number) => `/v1/socials/${id}`,
+  SOCIAL_SEARCH: '/v1/socials/search',
+  SOCIAL_CATEGORIES: '/v1/socials/categories',
 } as const

@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import LoginPage from '@/pages/auth/LoginPage'
 import DashboardPage from '@/pages/dashboard/DashboardPage'
 import UsersPage from '@/pages/users/UsersPage'
+import SocialsPage from '@/pages/socials/SocialsPage'
 import NotificationsPage from '@/pages/notifications/NotificationsPage'
 import AppVersionsPage from '@/pages/appVersions/AppVersionsPage'
 
@@ -29,6 +30,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute />}>
             <Route index element={<DashboardPage />} />
             <Route path="users" element={<UsersPage />} />
+            <Route path="socials" element={<SocialsPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="app-versions" element={<AppVersionsPage />} />
           </Route>

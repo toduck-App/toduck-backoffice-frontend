@@ -9,6 +9,7 @@ import {
   ChevronRight,
   LogOut,
   User,
+  FileText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useUIStore } from '@/stores/uiStore'
@@ -25,6 +26,11 @@ const navigation = [
     name: '사용자 관리',
     href: '/users',
     icon: Users,
+  },
+  {
+    name: '게시글 관리',
+    href: '/socials',
+    icon: FileText,
   },
   {
     name: '알림 관리',
