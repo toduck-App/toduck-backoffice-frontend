@@ -1,3 +1,14 @@
+// Action URL Options for broadcast notifications
+export const ACTION_URL_OPTIONS = [
+  { value: 'toduck://home', label: '홈 화면' },
+  { value: 'toduck://createPost', label: '게시글 작성 화면' },
+  { value: 'toduck://todo', label: 'TODO 메인' },
+  { value: 'toduck://diary', label: '다이어리 메인' },
+  { value: 'toduck://notification', label: '알림 화면' },
+] as const
+
+export type ActionUrlType = (typeof ACTION_URL_OPTIONS)[number]['value']
+
 // Notification Types
 export interface Notification {
   id: number
@@ -19,6 +30,7 @@ export interface BroadcastNotification {
   id: number
   title: string
   message: string
+  actionUrl: string
   scheduledAt: string | null
   sentAt: string | null
   status: 'SCHEDULED' | 'SENDING' | 'COMPLETED' | 'CANCELLED' | 'FAILED'
@@ -65,6 +77,7 @@ export interface CreateNotificationFormData {
 export interface BroadcastNotificationCreateRequest {
   title: string
   message: string
+  actionUrl: string
   scheduledAt?: string | null
 }
 
