@@ -16,6 +16,7 @@ class NotificationsService {
     const requestData = {
       title: data.title,
       message: data.message,
+      actionUrl: data.actionUrl,
       scheduledAt: data.scheduledAt || null,
     };
 

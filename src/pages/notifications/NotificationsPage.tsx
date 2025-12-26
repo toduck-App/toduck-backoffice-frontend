@@ -6,6 +6,7 @@ import {
   NotificationType,
   NOTIFICATION_TYPE_LABELS,
   NOTIFICATION_STATUS_STYLES,
+  ACTION_URL_OPTIONS,
 } from '@/types/notification'
 import { notificationsService } from '@/services/notifications'
 import { NotificationForm } from '@/components/NotificationForm'
@@ -38,9 +39,14 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
   Bell,
   Send,
-  Calendar,
   MoreVertical,
   X,
   AlertCircle,
@@ -53,6 +59,7 @@ import {
   CalendarCheck,
   BookOpen,
   Megaphone,
+  Link,
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ko } from 'date-fns/locale'
@@ -373,96 +380,153 @@ export default function NotificationsPage() {
         <CardContent>
           {/* 테이블 */}
           <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">제목</TableHead>
-                  <TableHead>메시지</TableHead>
-                  <TableHead className="w-[100px]">상태</TableHead>
-                  <TableHead className="w-[150px]">예약 시간</TableHead>
-                  <TableHead className="w-[150px]">발송 시간</TableHead>
-                  <TableHead className="w-[120px]">대상/발송</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedNotifications.length === 0 ? (
+            <TooltipProvider delayDuration={300}>
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="text-center py-8 text-neutral-500"
-                    >
-                      아직 발송된 알림이 없습니다.
-                    </TableCell>
+                    <TableHead className="w-[200px]">제목</TableHead>
+                    <TableHead>메시지</TableHead>
+                    <TableHead className="w-[120px]">이동 화면</TableHead>
+                    <TableHead className="w-[100px]">상태</TableHead>
+                    <TableHead className="w-[150px]">예약 시간</TableHead>
+                    <TableHead className="w-[150px]">발송 시간</TableHead>
+                    <TableHead className="w-[120px]">대상/발송</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
-                ) : (
-                  paginatedNotifications.map((notification) => (
-                    <TableRow key={notification.id}>
-                      <TableCell className="font-medium py-4">
-                        <div className="max-w-[200px] truncate">
-                          {notification.title}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="max-w-[300px] truncate">
-                          {notification.message}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Badge
-                          className={`${
-                            NOTIFICATION_STATUS_STYLES[notification.status].bg
-                          } ${NOTIFICATION_STATUS_STYLES[notification.status].color} border-0`}
-                        >
-                          {
-                            NOTIFICATION_STATUS_STYLES[notification.status]
-                              .label
-                          }
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm py-4">
-                        {formatDate(notification.scheduledAt)}
-                      </TableCell>
-                      <TableCell className="text-sm py-4">
-                        {formatDate(notification.sentAt)}
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="text-sm">
-                          {notification.sentUserCount || 0}/
-                          {notification.targetUserCount || 0}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        {notification.canCancel && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleCancelNotification(notification.id)
-                                }
-                                className="text-red-600"
-                              >
-                                <X className="mr-2 h-4 w-4" />
-                                알림 취소
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
+                </TableHeader>
+                <TableBody>
+                  {paginatedNotifications.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={8}
+                        className="text-center py-8 text-neutral-500"
+                      >
+                        아직 발송된 알림이 없습니다.
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    paginatedNotifications.map((notification) => (
+                      <Tooltip key={notification.id}>
+                        <TooltipTrigger asChild>
+                          <TableRow className="cursor-default">
+                            <TableCell className="font-medium py-4">
+                              <div className="max-w-[200px] truncate">
+                                {notification.title}
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <div className="max-w-[300px] truncate">
+                                {notification.message}
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-4">
+                              {notification.actionUrl ? (
+                                <div className="flex items-center gap-1 text-xs text-blue-600">
+                                  <Link className="w-3 h-3" />
+                                  <span className="truncate max-w-[100px]">
+                                    {ACTION_URL_OPTIONS.find(
+                                      (o) => o.value === notification.actionUrl
+                                    )?.label ||
+                                      notification.actionUrl.replace('toduck://', '')}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-neutral-400">-</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <Badge
+                                className={`${
+                                  NOTIFICATION_STATUS_STYLES[notification.status].bg
+                                } ${NOTIFICATION_STATUS_STYLES[notification.status].color} border-0`}
+                              >
+                                {NOTIFICATION_STATUS_STYLES[notification.status].label}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-sm py-4">
+                              {formatDate(notification.scheduledAt)}
+                            </TableCell>
+                            <TableCell className="text-sm py-4">
+                              {formatDate(notification.sentAt)}
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <div className="text-sm">
+                                {notification.sentUserCount || 0}/
+                                {notification.targetUserCount || 0}
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-4">
+                              {notification.canCancel && (
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                    >
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        handleCancelNotification(notification.id)
+                                      }
+                                      className="text-red-600"
+                                    >
+                                      <X className="mr-2 h-4 w-4" />
+                                      알림 취소
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" align="start" className="w-[700px] p-6">
+                          <div className="space-y-5">
+                            <div>
+                              <span className="text-sm text-neutral-600">제목</span>
+                              <p className="mt-1 text-base text-neutral-900">{notification.title}</p>
+                            </div>
+                            <div>
+                              <span className="text-sm text-neutral-600">메시지</span>
+                              <p className="mt-1 text-base text-neutral-900 whitespace-pre-wrap leading-relaxed">{notification.message}</p>
+                            </div>
+                            <div className="grid grid-cols-[1fr_1fr_1fr_1.5fr_1.5fr] gap-6 pt-2 border-t border-neutral-200">
+                              <div>
+                                <span className="text-sm text-neutral-600">이동 화면</span>
+                                <p className="mt-1 text-sm text-neutral-900">
+                                  {notification.actionUrl
+                                    ? ACTION_URL_OPTIONS.find((o) => o.value === notification.actionUrl)?.label || notification.actionUrl
+                                    : '-'}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-sm text-neutral-600">상태</span>
+                                <p className="mt-1 text-sm text-neutral-900">{notification.statusDescription || NOTIFICATION_STATUS_STYLES[notification.status].label}</p>
+                              </div>
+                              <div>
+                                <span className="text-sm text-neutral-600">대상/발송</span>
+                                <p className="mt-1 text-sm text-neutral-900">{notification.sentUserCount || 0}/{notification.targetUserCount || 0}명</p>
+                              </div>
+                              <div>
+                                <span className="text-sm text-neutral-600">예약 시간</span>
+                                <p className="mt-1 text-sm text-neutral-900">{notification.scheduledAt || '즉시 발송'}</p>
+                              </div>
+                              <div>
+                                <span className="text-sm text-neutral-600">발송 시간</span>
+                                <p className="mt-1 text-sm text-neutral-900">{notification.sentAt || '미발송'}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TooltipProvider>
           </div>
 
           {/* 페이지네이션 */}

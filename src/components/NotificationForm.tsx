@@ -11,20 +11,28 @@ import {
   DialogTitle,
   DialogFooter,
 } from './ui/dialog'
-import { Input } from './ui/input'
-import { Textarea } from './ui/textarea'
 import { Label } from './ui/label'
-import { Switch } from './ui/switch'
 import { TimePicker } from './ui/time-picker'
-import { BroadcastNotificationCreateRequest } from '@/types/notification'
+import { MentionTextarea, MentionInput } from './ui/mention-textarea'
 import {
-  Calendar,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select'
+import {
+  BroadcastNotificationCreateRequest,
+  ACTION_URL_OPTIONS,
+} from '@/types/notification'
+import {
   Clock,
   Send,
   AlertCircle,
   CalendarIcon,
   ChevronLeft,
   ChevronRight,
+  Link,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -41,6 +49,7 @@ const notificationSchema = z
       .string()
       .min(1, '내용을 입력해주세요')
       .max(500, '내용은 500자 이하로 입력해주세요'),
+    actionUrl: z.string().min(1, '이동 화면을 선택해주세요'),
     isScheduled: z.boolean(),
     scheduledDate: z.string().optional(),
     scheduledTime: z.string().optional(),
@@ -67,6 +76,12 @@ interface NotificationFormProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (data: BroadcastNotificationCreateRequest) => Promise<void>
+}
+
+// {@Username} 태그를 예시 닉네임으로 치환
+function renderTextPreview(text: string, fallback: string): string {
+  if (!text) return fallback
+  return text.replace(/\{@Username\}/g, '용감한오리777')
 }
 
 // 날짜 선택 컴포넌트
@@ -250,7 +265,6 @@ export function NotificationForm({
   const [characterCount, setCharacterCount] = useState({ title: 0, message: 0 })
 
   const {
-    register,
     handleSubmit,
     reset,
     watch,
@@ -262,6 +276,7 @@ export function NotificationForm({
     defaultValues: {
       title: '',
       message: '',
+      actionUrl: 'toduck://home', // 기본값: 홈 화면
       isScheduled: true, // 기본으로 예약 발송 켜짐
       scheduledDate: '',
       scheduledTime: '09:00', // 기본 시간 설정
@@ -279,6 +294,7 @@ export function NotificationForm({
   const isScheduled = watch('isScheduled')
   const titleValue = watch('title')
   const messageValue = watch('message')
+  const actionUrlValue = watch('actionUrl')
   const scheduledDate = watch('scheduledDate')
   const scheduledTime = watch('scheduledTime')
 
@@ -301,6 +317,7 @@ export function NotificationForm({
       const requestData: BroadcastNotificationCreateRequest = {
         title: data.title,
         message: data.message,
+        actionUrl: data.actionUrl,
         scheduledAt: scheduledAt,
       }
 
@@ -334,6 +351,16 @@ export function NotificationForm({
 
         <div className="flex-1 overflow-y-auto px-6 pb-6">
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
+            {/* 경고 메시지 */}
+            <div className="bg-red-50 border border-red-200 rounded-md p-3">
+              <p className="text-sm text-red-700 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>
+                  이 알림은 <strong>모든 활성 사용자</strong>에게 발송됩니다.
+                </span>
+              </p>
+            </div>
+
             {/* 제목 입력 */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -344,12 +371,18 @@ export function NotificationForm({
                   {characterCount.title}/100
                 </span>
               </div>
-              <Input
-                id="title"
-                {...register('title')}
-                placeholder="예: 서비스 업데이트 안내"
-                className="w-full"
-                maxLength={100}
+              <Controller
+                name="title"
+                control={control}
+                render={({ field }) => (
+                  <MentionInput
+                    id="title"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="예: 서비스 업데이트 안내 (@ 입력 시 사용자 이름 삽입)"
+                    maxLength={100}
+                  />
+                )}
               />
               {errors.title && (
                 <div className="flex items-center gap-1 text-sm text-red-600">
@@ -369,13 +402,18 @@ export function NotificationForm({
                   {characterCount.message}/500
                 </span>
               </div>
-              <Textarea
-                id="message"
-                {...register('message')}
-                placeholder="사용자에게 전달할 메시지를 입력하세요"
-                rows={3}
-                className="w-full resize-none"
-                maxLength={500}
+              <Controller
+                name="message"
+                control={control}
+                render={({ field }) => (
+                  <MentionTextarea
+                    id="message"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="사용자에게 전달할 메시지를 입력하세요. (@ 입력 시 사용자 이름 삽입)"
+                    maxLength={500}
+                  />
+                )}
               />
               {errors.message && (
                 <div className="flex items-center gap-1 text-sm text-red-600">
@@ -385,34 +423,85 @@ export function NotificationForm({
               )}
             </div>
 
+            {/* 클릭 시 이동 화면 */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                클릭 시 이동 화면 <span className="text-red-500">*</span>
+              </Label>
+              <Controller
+                name="actionUrl"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <div className="flex items-center gap-2">
+                        <Link className="w-4 h-4 text-gray-400" />
+                        <SelectValue placeholder="이동할 화면을 선택하세요" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ACTION_URL_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.actionUrl && (
+                <div className="flex items-center gap-1 text-sm text-red-600">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>{errors.actionUrl.message}</span>
+                </div>
+              )}
+              <p className="text-xs text-neutral-500">
+                알림 클릭 시 이동할 앱 화면을 선택합니다.
+              </p>
+            </div>
+
             {/* 알림 미리보기 */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">미리보기</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">미리보기</Label>
+                {actionUrlValue && (
+                  <span className="text-xs text-blue-600 flex items-center gap-1">
+                    <Link className="w-3 h-3" />
+                    {ACTION_URL_OPTIONS.find((o) => o.value === actionUrlValue)
+                      ?.label || actionUrlValue}
+                  </span>
+                )}
+              </div>
               <div className="relative w-full">
                 <img
                   src={NOTIFICATION_BG_PATH}
                   alt="알림 미리보기"
                   className="w-full rounded-2xl"
                 />
-                {/* 텍스트 오버레이
-                    위치 조절:
-                    - left: 앱 아이콘 오른쪽 여백 (%)
-                    - right: 오른쪽 여백 (%)
-                    - top: 상단 여백 (%)
-                  */}
                 <div
                   className="absolute"
                   style={{
                     left: '24%',
-                    right: '8%',
-                    top: '26%',
+                    width: '250px',
+                    // 컨테이너 중앙 정렬로 자동 조절
+                    top: '33%',
+                    transform: 'translateY(-50%)',
                   }}
                 >
-                  <p className="font-medium text-white/90 truncate text-[12px] mb-0.2">
-                    {titleValue || '알림 제목'}
+                  <p
+                    className="font-medium text-white/90 truncate mb-0.5"
+                    style={{ fontSize: '15px', marginBottom: '-2px' }}
+                  >
+                    {renderTextPreview(titleValue, '알림 제목')}
                   </p>
-                  <p className="text-white/70 text-[11px] leading-snug line-clamp-2">
-                    {messageValue || '알림 내용이 여기에 표시됩니다'}
+                  <p
+                    className="font-small text-white/80 leading-snug line-clamp-2 whitespace-pre-wrap"
+                    style={{ fontSize: '15px' }}
+                  >
+                    {renderTextPreview(
+                      messageValue,
+                      '알림 내용이 여기에 표시됩니다'
+                    )}
                   </p>
                 </div>
               </div>
@@ -484,15 +573,6 @@ export function NotificationForm({
               )}
             </div>
 
-            {/* 경고 메시지 */}
-            <div className="bg-red-50 border border-red-200 rounded-md p-3">
-              <p className="text-sm text-red-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span>
-                  이 알림은 <strong>모든 활성 사용자</strong>에게 발송됩니다.
-                </span>
-              </p>
-            </div>
           </form>
         </div>
 
