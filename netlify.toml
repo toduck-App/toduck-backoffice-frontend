@@ -2,6 +2,20 @@
   publish = "dist"
   command = "yarn build:ignore-ts"
 
+# AASA 파일 헤더 설정 (iOS 유니버셜 링크)
+[[headers]]
+  for = "/.well-known/apple-app-site-association"
+  [headers.values]
+    Content-Type = "application/json"
+    Cache-Control = "max-age=3600"
+
+# AASA 파일은 리다이렉트하지 않고 직접 서빙
+[[redirects]]
+  from = "/.well-known/apple-app-site-association"
+  to = "/.well-known/apple-app-site-association"
+  status = 200
+
+# SPA 리다이렉트 (모든 경로를 index.html로)
 [[redirects]]
   from = "/*"
   to = "/index.html"

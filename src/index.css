@@ -60,3 +60,14 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+/* 딥링크 페이지 배경 */
+.deeplink-bg {
+  background: radial-gradient(ellipse 90% 50% at top, #ffd4aa, #ffecdd 60%, #fff);
+}
+
+@media (max-width: 640px) {
+  .deeplink-bg {
+    background: radial-gradient(ellipse 100% 35% at top, #ffd4aa, #ffecdd 60%, #fff);
+  }
+}
