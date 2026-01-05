@@ -6,5 +6,6 @@
 
 <br/>
 
-<img  alt="Group 1" src="https://github.com/user-attachments/assets/d305522d-cfb9-45ac-8d14-a09abcb070c6" />
+<img width="6144" height="11174" alt="Group 1068" src="https://github.com/user-attachments/assets/53b03101-dea7-4c34-a270-ee029001b022" />
+
 <img alt="Group 2" src="https://github.com/user-attachments/assets/d21c89ba-e8b3-451b-ae9a-c9ed5dd81d5c" />
