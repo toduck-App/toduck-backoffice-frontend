@@ -3,8 +3,10 @@
     "apps": [],
     "details": [
       {
-        "appID": "{TEAM_ID}.{BUNDLE_ID}",
-        "paths": ["/_ul/*"]
+        "appID": "J68L9B7UJT.to.duck.toduck",
+        "paths": [
+          "/_ul/*"
+        ]
       }
     ]
   }
