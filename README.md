@@ -2,7 +2,7 @@
 
 ## <img src="https://github.com/user-attachments/assets/2296d53a-cd74-4e38-8d4a-4f84072cbecb" width=24> 토덕 To.duck 관리자 페이지
 
-> [바로가기](https://backoffice-toduck.seol.pro)
+> [바로가기](https://backoffice.toduck.app)
 
 <br/>
 
