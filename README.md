@@ -4,6 +4,12 @@
 
 > [바로가기](https://backoffice.toduck.app)
 
+### 🛠️ Maintainer
+|                                     설진영                                      |
+|:----------------------------------------------------------------------------:|
+| <img src="https://avatars.githubusercontent.com/u/70826982?v=4" width="80"/> |
+|                    [@Seol-JY](https://github.com/Seol-JY)                    |
+
 <br/>
 
 <img width="6144" height="11174" alt="Group 1068" src="https://github.com/user-attachments/assets/53b03101-dea7-4c34-a270-ee029001b022" />
