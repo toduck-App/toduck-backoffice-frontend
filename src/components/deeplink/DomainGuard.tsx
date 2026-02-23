@@ -46,8 +46,14 @@ export function DomainGuard({ children, allowedDomain }: DomainGuardProps) {
     // 개발 환경에서는 리다이렉트 안함
     if (isLocal) return
 
-    // toduck.app에서 백오피스 경로 접근 시 → /_ul로 리다이렉트
+    // toduck.app에서 백오피스 경로 접근 시 리다이렉트
     if (allowedDomain === 'backoffice' && isToduck) {
+      // 루트 경로는 웹 서비스로 리다이렉트
+      if (window.location.pathname === '/') {
+        window.location.href = 'https://web.toduck.app'
+        return
+      }
+      // 그 외 경로는 /_ul로 리다이렉트
       window.location.href = `https://${TODUCK_DOMAIN}/_ul`
       return
     }
