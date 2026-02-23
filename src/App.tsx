@@ -61,6 +61,16 @@ function App() {
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="app-versions" element={<AppVersionsPage />} />
           </Route>
+
+          {/* 매치되지 않는 경로 - toduck.app이면 웹으로, 아니면 홈으로 */}
+          <Route
+            path="*"
+            element={
+              <DomainGuard allowedDomain="backoffice">
+                <ProtectedRoute />
+              </DomainGuard>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
